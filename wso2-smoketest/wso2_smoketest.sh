@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPO_URL="https://raw.githubusercontent.com/Sundsvallskommun/api-team-tools/refs/heads/main/smoketest/.default.env"
+REPO_URL="https://raw.githubusercontent.com/Sundsvallskommun/api-team-tools/refs/heads/main/wso2-smoketest/.default.env"
 
 # Check if .env file exists, if not copy from .default.env or pull from GitHub
 if [ ! -f ".env" ]; then
@@ -45,7 +45,7 @@ case "$environment" in
     API_URL_EXTERNAL="$LAB_API_URL_EXTERNAL"
     CLIENT_ID="$LAB_CLIENT_ID"
     CLIENT_SECRET="$LAB_CLIENT_SECRET"
-    echo "Running smoketest in lab"
+    echo "Running WSO2 smoketest in lab"
     ;;
 2)
     TOKEN_URL="$TEST_TOKEN_URL"
@@ -53,7 +53,7 @@ case "$environment" in
     API_URL_EXTERNAL="$TEST_API_URL_EXTERNAL"
     CLIENT_ID="$TEST_CLIENT_ID"
     CLIENT_SECRET="$TEST_CLIENT_SECRET"
-    echo "Running smoketest in test"
+    echo "Running WSO2 smoketest in test"
     ;;
 3)
     TOKEN_URL="$PROD_TOKEN_URL"
@@ -61,7 +61,7 @@ case "$environment" in
     API_URL_EXTERNAL="$PROD_API_URL_EXTERNAL"
     CLIENT_ID="$PROD_CLIENT_ID"
     CLIENT_SECRET="$PROD_CLIENT_SECRET"
-    echo "Running smoketest in production"
+    echo "Running WSO2 smoketest in production"
     ;;
 *)
     echo "Invalid choice"
@@ -96,7 +96,7 @@ fi
 
 echo "Token retrieved successfully"
 
-echo "Running smoke test..."
+echo "Running WSO2 smoketest..."
 
 for API in "${APIS[@]}"; do
     for GATEWAY in "$API_URL_INTERNAL" "$API_URL_EXTERNAL"; do

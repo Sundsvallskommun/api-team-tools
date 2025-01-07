@@ -1,5 +1,4 @@
-# Smoketest
-
+# WSO2 Smoketest
 
 This suite is designed to perform preliminary checks on your APIs to ensure they are operational and performing as expected. It serves as a diagnostic tool to verify the health of your endpoints.
 
@@ -14,11 +13,11 @@ This suite is designed to perform preliminary checks on your APIs to ensure they
 
    - Ensure the smoketest script has execute permissions. You can set this by running:
      ```bash
-     chmod +x smoketest.sh
+     chmod +x wso2_smoketest.sh
      ```
    - Run the smoketest script using the following command:
      ```bash
-     ./smoketest.sh
+     ./wso2_smoketest.sh
      ```
 
 3. **Reviewing Results**:
