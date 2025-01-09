@@ -111,8 +111,6 @@ for API in "${APIS[@]}"; do
 
         # Service is the second part of the URL
         SERVICE="$(echo "$API" | cut -d'/' -f2)"
-        # Version is the third part of the URL
-        VERSION="$(echo "$API" | cut -d'/' -f3)"
         ENVIRONMENT=""
 
         if [ "$GATEWAY" = "$API_URL_INTERNAL" ]; then
@@ -122,10 +120,10 @@ for API in "${APIS[@]}"; do
         fi
 
         if [[ "$STATUS_CODE" == 2* ]]; then
-            echo -e "${GREEN}${SERVICE} - ${VERSION} - ${ENVIRONMENT} - Status code: $STATUS_CODE [OK] Took ${TIME_TOTAL} seconds${NC}"
+            echo -e "${GREEN}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [OK] Took ${TIME_TOTAL} seconds${NC}"
         else
             DESCRIPTION="$(echo "$BODY" | grep -o '"description":"[^"]*' | grep -o '[^"]*$')"
-            echo -e "${RED}${SERVICE} - ${VERSION} - ${ENVIRONMENT} - Status code: $STATUS_CODE [$DESCRIPTION] Took ${TIME_TOTAL} seconds${NC}"
+            echo -e "${RED}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [$DESCRIPTION] Took ${TIME_TOTAL} seconds${NC}"
         fi
 
         echo
