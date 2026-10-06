@@ -22,15 +22,20 @@ if [ ! -f ".env" ]; then
     fi
 fi
 
-# Load environment variables from .env file
+# Load environment variables from .env file (./ is required, a bare name makes bash search $PATH first)
 set -a
-source ".env"
+source "./.env"
 set +a
 
 # Define color variables
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+# Extract the first string value of a JSON field from a body, e.g. json_field "$BODY" detail
+json_field() {
+    echo "$1" | grep -o "\"$2\":\"[^\"]*" | head -n1 | grep -o '[^"]*$'
+}
 
 echo "Select environment:"
 echo "1. Lab"
@@ -80,8 +85,8 @@ elif [ "$custom" != "n" ]; then
     exit 1
 fi
 
-# Encode clientId and clientSecret in base64
-AUTH_HEADER="$(echo -n "$CLIENT_ID:$CLIENT_SECRET" | base64)"
+# Encode clientId and clientSecret in base64 (GNU base64 wraps long output, which would break the header)
+AUTH_HEADER="$(echo -n "$CLIENT_ID:$CLIENT_SECRET" | base64 | tr -d '\n')"
 
 echo "Retrieving token..."
 TOKEN="$(curl -s -X POST "$TOKEN_URL" \
@@ -100,6 +105,7 @@ echo "Running WSO2 smoketest..."
 
 for API in "${APIS[@]}"; do
     for GATEWAY in "$API_URL_INTERNAL" "$API_URL_EXTERNAL"; do
+        TIMESTAMP="$(date '+%Y%m%d %H:%M')"
         RESPONSE="$(curl -s -w "\n%{http_code}\n%{time_total}" -X GET "${GATEWAY}${API}" \
             -H "Authorization: Bearer $TOKEN")"
         # The last line is time_total
@@ -120,10 +126,13 @@ for API in "${APIS[@]}"; do
         fi
 
         if [[ "$STATUS_CODE" == 2* ]]; then
-            echo -e "${GREEN}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [OK] Took ${TIME_TOTAL} seconds${NC}"
+            echo -e "${GREEN}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [OK] Took ${TIME_TOTAL} seconds (${TIMESTAMP})${NC}"
         else
-            DESCRIPTION="$(echo "$BODY" | grep -o '"description":"[^"]*' | grep -o '[^"]*$')"
-            echo -e "${RED}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [$DESCRIPTION] Took ${TIME_TOTAL} seconds${NC}"
+            # WSO2 gateway errors carry "description", errors from the service itself (dept44 Problem) carry "detail"/"title"
+            DESCRIPTION="$(json_field "$BODY" description)"
+            DESCRIPTION="${DESCRIPTION:-$(json_field "$BODY" detail)}"
+            DESCRIPTION="${DESCRIPTION:-$(json_field "$BODY" title)}"
+            echo -e "${RED}${SERVICE} - ${ENVIRONMENT} - Status code: $STATUS_CODE [$DESCRIPTION] Took ${TIME_TOTAL} seconds (${TIMESTAMP})${NC}"
         fi
 
         echo

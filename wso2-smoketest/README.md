@@ -22,6 +22,10 @@ This suite is designed to perform preliminary checks on your APIs to ensure they
 
 3. **Reviewing Results**:
    - The test results will be displayed in your terminal. Please review for any errors or warnings that may require attention.
+   - Each line shows service, gateway, status code, the error reason (from WSO2 or the service itself), response time and when the call was made:
+     ```
+     messaging - INTERNAL - Status code: 200 [OK] Took 0.094901 seconds (20261006 10:33)
+     ```
 
 ## Configuration Details
 
